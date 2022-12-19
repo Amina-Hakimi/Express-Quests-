@@ -85,9 +85,11 @@ const updateUser = (req, res) => {
       [firstname, lastname, email, city, language, id]
     )
     .then(([result]) => {
-      if (result.affectedRows === 0) {
+      if (req.params.id !== req.payload.sub) {
+        res.sendStatus(403);
+      } else if (result.affectedRows === 0)  {
         res.status(404).send("Not Found");
-      } else {
+      }  else {
         res.sendStatus(204);
       }
     })
@@ -103,7 +105,9 @@ const deleteUser = (req, res) => {
   database
     .query("delete from users where id = ?", [id])
     .then(([result]) => {
-      if (result.affectedRows === 0) {
+      if (req.params.id !== req.payload.sub) {
+        res.sendStatus(403);
+      } else if (result.affectedRows === 0) {
         res.status(404).send("Not Found");
       } else {
         res.sendStatus(204);
