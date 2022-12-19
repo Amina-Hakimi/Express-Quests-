@@ -1,4 +1,3 @@
-const database = require("./database");
 
 const database = require("./database");
 
@@ -115,6 +114,24 @@ const deleteUser = (req, res) => {
       res.status(500).send("Error deleting the user");
     });
 };
+const getUserByEmailWithPasswordAndPassToNext = (req, res, next) => {
+  const {email} = req.body ;
+
+  database
+    .query("select * from users where email = ?", [email])
+    .then(([users]) => {
+      if (users[0] != null) {
+        req.user = users[0];
+        next();
+      } else {
+        res.sendStatus(401);
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error retrieving data from database");
+    });
+};
 
 module.exports = {
   getUsers,
@@ -122,4 +139,5 @@ module.exports = {
   postUser,
   updateUser,
   deleteUser,
+  getUserByEmailWithPasswordAndPassToNext,
 };
